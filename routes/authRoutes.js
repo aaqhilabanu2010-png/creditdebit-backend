@@ -5,6 +5,9 @@ const { protect } = require('../middleware/authMiddleware');
 const User = require('../models/User');
 const router = express.Router();
 
+// Frontend URL - change this to your GitHub Pages URL
+const FRONTEND_URL = 'https://aaqhilabanu2010-png.github.io/creditdebit-frontend';
+
 // @route   GET /auth/google
 // @desc    Auth with Google
 // @access  Public
@@ -16,7 +19,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 // @access  Public
 router.get(
     '/google/callback',
-    passport.authenticate('google', { failureRedirect: 'http://localhost:3000/?error=login_failed' }),
+    passport.authenticate('google', { failureRedirect: `${FRONTEND_URL}/?error=login_failed` }),
     (req, res) => {
         const token = jwt.sign(
             { id: req.user._id },
@@ -35,11 +38,11 @@ router.get(
                 <script>
                     // Send token to parent window
                     if (window.opener) {
-                        window.opener.postMessage({ token: '${token}' }, 'http://localhost:3000');
+                        window.opener.postMessage({ token: '${token}' }, '${FRONTEND_URL}');
                         window.close();
                     } else {
                         // Fallback: redirect with token
-                        window.location.href = 'http://localhost:3000/dashboard?token=${token}';
+                        window.location.href = '${FRONTEND_URL}/dashboard?token=${token}';
                     }
                 </script>
                 <p>Login successful! Closing window...</p>
@@ -67,6 +70,7 @@ router.get('/me', protect, async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
+
 // @route   GET /auth/logout
 // @desc    Logout user
 // @access  Public
