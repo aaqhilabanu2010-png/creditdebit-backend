@@ -20,25 +20,32 @@ require('./config/passport');
 
 const app = express();
 
+// Force HTTPS redirect
+app.use((req, res, next) => {
+    if (req.headers['x-forwarded-proto'] !== 'https') {
+        return res.redirect(301, 'https://' + req.headers.host + req.url);
+    }
+    next();
+});
+
 // CORS - Allow frontend origins
 const allowedOrigins = [
     'http://localhost:3000',
-    'https://aaqhilabanu2010-png.github.io',
+    'https://aaqhilabanu2010-png.github.io'
 ];
 
 app.use(cors({
     origin: function (origin, callback) {
-        // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
         if (allowedOrigins.indexOf(origin) === -1) {
-            return callback(null, true); // Allow all origins for now (development)
+            return callback(null, true);
         }
         return callback(null, true);
     },
     credentials: true
 }));
 
-// Session middleware (required for Passport Google OAuth)
+// Session middleware
 app.use(session({
     secret: process.env.JWT_SECRET,
     resave: false,
@@ -64,17 +71,15 @@ app.get('/', (req, res) => {
     res.json({ message: 'CreditDebit API is running!' });
 });
 
-// Health check route
+// Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Error handler (must be last)
+// Error handler
 app.use(errorHandler);
 
-// Server port
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
