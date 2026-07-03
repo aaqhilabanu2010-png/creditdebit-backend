@@ -23,7 +23,7 @@ const app = express();
 // CORS - Allow frontend origins
 const allowedOrigins = [
     'http://localhost:3000',
-    'https://aaqhilabanu2010-png.github.io'
+    'https://aaqhilabanu2010-png.github.io',
 ];
 
 app.use(cors({

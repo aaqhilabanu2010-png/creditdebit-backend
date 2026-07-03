@@ -7,6 +7,7 @@ const router = express.Router();
 
 // Frontend URL - change this to your GitHub Pages URL
 const FRONTEND_URL = 'https://aaqhilabanu2010-png.github.io/creditdebit-frontend';
+const BACKEND_URL = 'https://creditdebit-backend-production-abd7.up.railway.app';
 
 // @route   GET /auth/google
 // @desc    Auth with Google
