@@ -6,7 +6,7 @@ const User = require('../models/User');
 const router = express.Router();
 
 // Frontend URL
-const FRONTEND_URL = 'https://aaqhilabanu2010-png.github.io/creditdebit-frontend';
+const FRONTEND_URL = 'https://aaqhilabanu2010-png.github.io';
 
 // @route   GET /auth/google
 // @desc    Auth with Google
@@ -19,7 +19,7 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 // @access  Public
 router.get(
     '/google/callback',
-    passport.authenticate('google', { failureRedirect: `${FRONTEND_URL}/?error=login_failed` }),
+    passport.authenticate('google', { failureRedirect: `${FRONTEND_URL}/creditdebit-frontend/?error=login_failed` }),
     (req, res) => {
         const token = jwt.sign(
             { id: req.user._id },
@@ -27,8 +27,39 @@ router.get(
             { expiresIn: '30d' }
         );
 
-        // Redirect to frontend with token
-        res.redirect(`${FRONTEND_URL}/dashboard?token=${token}`);
+        // Return HTML that sends token to parent window and closes
+        res.send(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Login Success</title>
+            </head>
+            <body>
+                <script>
+                    (function() {
+                        const token = '${token}';
+                        const frontendUrl = '${FRONTEND_URL}';
+                        
+                        // Try to send message to parent window
+                        if (window.opener) {
+                            window.opener.postMessage({ token: token }, frontendUrl);
+                            // Also try with wildcard
+                            window.opener.postMessage({ token: token }, '*');
+                            setTimeout(function() {
+                                window.close();
+                            }, 500);
+                        } else {
+                            // Fallback: redirect directly
+                            window.location.href = frontendUrl + '/creditdebit-frontend/dashboard?token=' + token;
+                        }
+                    })();
+                </script>
+                <p style="text-align: center; font-family: Arial; margin-top: 50px;">
+                    Login successful! Closing window...
+                </p>
+            </body>
+            </html>
+        `);
     }
 );
 
