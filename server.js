@@ -23,8 +23,7 @@ const app = express();
 // CORS - Allow frontend origins
 const allowedOrigins = [
     'http://localhost:3000',
-    'https://creditdebit-frontend.up.railway.app',
-    'https://creditdebit-frontend-production.up.railway.app'
+    'https://aaqhilabanu2010-png.github.io'
 ];
 
 app.use(cors({
