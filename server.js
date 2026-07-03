@@ -20,6 +20,25 @@ require('./config/passport');
 
 const app = express();
 
+// CORS - Allow frontend origins
+const allowedOrigins = [
+    'http://localhost:3000',
+    'https://creditdebit-frontend.up.railway.app',
+    'https://creditdebit-frontend-production.up.railway.app'
+];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+            return callback(null, true); // Allow all origins for now (development)
+        }
+        return callback(null, true);
+    },
+    credentials: true
+}));
+
 // Session middleware (required for Passport Google OAuth)
 app.use(session({
     secret: process.env.JWT_SECRET,
@@ -32,7 +51,6 @@ app.use(session({
 }));
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
