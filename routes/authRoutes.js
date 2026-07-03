@@ -5,9 +5,8 @@ const { protect } = require('../middleware/authMiddleware');
 const User = require('../models/User');
 const router = express.Router();
 
-// Frontend URL - change this to your GitHub Pages URL
+// Frontend URL
 const FRONTEND_URL = 'https://aaqhilabanu2010-png.github.io/creditdebit-frontend';
-const BACKEND_URL = 'https://creditdebit-backend-production-abd7.up.railway.app';
 
 // @route   GET /auth/google
 // @desc    Auth with Google
@@ -28,28 +27,8 @@ router.get(
             { expiresIn: '30d' }
         );
 
-        // Return HTML that sends token to parent window and closes
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>Login Success</title>
-            </head>
-            <body>
-                <script>
-                    // Send token to parent window
-                    if (window.opener) {
-                        window.opener.postMessage({ token: '${token}' }, '${FRONTEND_URL}');
-                        window.close();
-                    } else {
-                        // Fallback: redirect with token
-                        window.location.href = '${FRONTEND_URL}/dashboard?token=${token}';
-                    }
-                </script>
-                <p>Login successful! Closing window...</p>
-            </body>
-            </html>
-        `);
+        // Redirect to frontend with token
+        res.redirect(`${FRONTEND_URL}/dashboard?token=${token}`);
     }
 );
 
