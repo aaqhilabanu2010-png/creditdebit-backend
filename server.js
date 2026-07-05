@@ -35,12 +35,15 @@ if (process.env.NODE_ENV === 'production') {
 const allowedOrigins = [
   'http://localhost:3000',
   'https://aaqhilabanu2010-png.github.io',
-  'https://income-tracker-osvg.onrender.com'
+  'https://income-tracker-osvg.onrender.com'  // ADD THIS
 ];
 
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) === -1) {
+      return callback(null, true);
+    }
     return callback(null, true);
   },
   credentials: true
