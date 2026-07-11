@@ -91,6 +91,7 @@ router.get('/', protect, async (req, res) => {
 
         return {
           ...customer,
+          photo: customer.photo || '', // Ensure photo is included
           totalReceived,
           totalSent,
           netBalance: totalReceived - totalSent,
@@ -161,6 +162,7 @@ router.get('/:id', protect, async (req, res) => {
       success: true,
       customer: {
         ...customer,
+        photo: customer.photo || '', // Ensure photo is included in detail view
         totalReceived,
         totalSent,
         netBalance,
