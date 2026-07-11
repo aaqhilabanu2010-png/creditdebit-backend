@@ -21,6 +21,10 @@ const customerSchema = new mongoose.Schema({
     trim: true,
     default: ''
   },
+  photo: {
+    type: String,
+    default: ''
+  },
   isDeleted: {
     type: Boolean,
     default: false

@@ -9,7 +9,7 @@ const { protect } = require('../middleware/authMiddleware');
 // @access Private
 router.post('/', protect, async (req, res) => {
   try {
-    const { name, phone, details } = req.body;
+    const { name, phone, details, photo } = req.body;
 
     if (!name) {
       return res.status(400).json({
@@ -22,7 +22,8 @@ router.post('/', protect, async (req, res) => {
       userId: req.user._id,
       name: name.trim(),
       phone: phone ? phone.trim() : '',
-      details: details ? details.trim() : ''
+      details: details ? details.trim() : '',
+      photo: photo || ''
     });
 
     res.status(201).json({
