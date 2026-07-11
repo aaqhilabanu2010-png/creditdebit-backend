@@ -65,16 +65,19 @@ router.get('/', protect, async (req, res) => {
       .sort({ createdAt: -1 })
       .lean();
 
+    console.log(`Found ${customers.length} customers. First customer has photo: ${!!customers[0]?.photo}`);
+
     // Calculate stats for each customer
     const customersWithStats = await Promise.all(
       customers.map(async (customer) => {
+        // ... internal transaction logic ...
         const transactions = await Transaction.find({
           userId: req.user._id,
           customerId: customer._id
         }).lean();
 
-        let totalReceived = 0;  // credit (money received FROM customer)
-        let totalSent = 0;      // debit (money sent TO customer)
+        let totalReceived = 0;
+        let totalSent = 0;
 
         transactions.forEach(t => {
           if (t.type === 'credit') {
@@ -84,19 +87,17 @@ router.get('/', protect, async (req, res) => {
           }
         });
 
-        // pendingAmount = how much customer still owes you
-        // If totalSent > totalReceived, customer owes you (positive)
-        // If totalReceived > totalSent, you owe customer (negative = advance)
         const pendingAmount = totalSent - totalReceived;
 
+        // CRITICAL FIX: Ensure all fields from 'customer' (including photo) are spread first
         return {
           ...customer,
-          photo: customer.photo || '', // Ensure photo is included
+          photo: customer.photo || '',
           totalReceived,
           totalSent,
           netBalance: totalReceived - totalSent,
-          pendingAmount: pendingAmount > 0 ? pendingAmount : 0, // Only show positive pending
-          advanceAmount: pendingAmount < 0 ? Math.abs(pendingAmount) : 0, // Show advance separately
+          pendingAmount: pendingAmount > 0 ? pendingAmount : 0,
+          advanceAmount: pendingAmount < 0 ? Math.abs(pendingAmount) : 0,
           transactionCount: transactions.length
         };
       })
